@@ -5,6 +5,7 @@ Generate a personalized digital badge for Microsoft Learn completion.
 
 import argparse
 import os
+import shutil
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 import hashlib
@@ -15,9 +16,48 @@ def sanitize_filename(name):
     return "".join(c if c.isalnum() or c in (' ', '_') else '_' for c in name).strip().replace(' ', '_')
 
 
-def generate_badge(name, email, profile_url=None, proof_url=None):
-    """Generate a personalized badge image."""
+def generate_badge(name, email, profile_url=None, proof_url=None, badge_image_path=None):
+    """Generate a personalized badge image.
     
+    Args:
+        name: Recipient name
+        email: Recipient email
+        profile_url: Optional Microsoft Learn profile URL
+        proof_url: Optional completion proof URL
+        badge_image_path: Optional path to pre-designed badge image. If provided,
+                         this image will be used instead of generating one programmatically.
+    """
+    
+    # Generate verification code (hash of name + email + date)
+    verification_string = f"{name}{email}{datetime.now().strftime('%Y%m%d')}"
+    verification_code = hashlib.sha256(verification_string.encode()).hexdigest()[:12].upper()
+    
+    # Setup output path
+    output_dir = "badges"
+    os.makedirs(output_dir, exist_ok=True)
+    sanitized_name = sanitize_filename(name)
+    output_path = os.path.join(output_dir, f"{sanitized_name}_badge.png")
+    
+    # If a custom badge image is provided, use it instead of generating
+    if badge_image_path:
+        if not os.path.exists(badge_image_path):
+            raise FileNotFoundError(f"Badge image not found: {badge_image_path}")
+        
+        # Copy the custom badge image to the output location
+        shutil.copy2(badge_image_path, output_path)
+        print(f"Using custom badge image: {badge_image_path}")
+        print(f"Badge saved to: {output_path}")
+        print(f"Verification Code: {verification_code}")
+        
+        # Write outputs to file for GitHub Actions
+        output_file = "badge_info.txt"
+        with open(output_file, 'w') as f:
+            f.write(f"badge_path={output_path}\n")
+            f.write(f"verification_code={verification_code}\n")
+        
+        return output_path, verification_code
+    
+    # Otherwise, generate badge programmatically (existing behavior)
     # Badge dimensions
     width, height = 800, 600
     
@@ -110,10 +150,6 @@ def generate_badge(name, email, profile_url=None, proof_url=None):
     date_width = date_bbox[2] - date_bbox[0]
     draw.text((center_x - date_width//2, 460), date_text, fill='white', font=info_font)
     
-    # Generate verification code (hash of name + email + date)
-    verification_string = f"{name}{email}{datetime.now().strftime('%Y%m%d')}"
-    verification_code = hashlib.sha256(verification_string.encode()).hexdigest()[:12].upper()
-    
     # Draw verification code
     verify_text = f"Verification Code: {verification_code}"
     verify_bbox = draw.textbbox((0, 0), verify_text, font=info_font)
@@ -121,11 +157,6 @@ def generate_badge(name, email, profile_url=None, proof_url=None):
     draw.text((center_x - verify_width//2, 510), verify_text, fill='white', font=info_font)
     
     # Save badge
-    output_dir = "badges"
-    os.makedirs(output_dir, exist_ok=True)
-    
-    sanitized_name = sanitize_filename(name)
-    output_path = os.path.join(output_dir, f"{sanitized_name}_badge.png")
     img.save(output_path, 'PNG', quality=95)
     
     print(f"Badge generated successfully: {output_path}")
@@ -146,6 +177,7 @@ def main():
     parser.add_argument('--email', required=True, help='Recipient email')
     parser.add_argument('--profile', help='Microsoft Learn profile URL')
     parser.add_argument('--proof', help='Completion proof URL')
+    parser.add_argument('--badge-image', dest='badge_image', help='Path to pre-designed badge image file')
     
     args = parser.parse_args()
     
@@ -153,7 +185,8 @@ def main():
         args.name,
         args.email,
         args.profile,
-        args.proof
+        args.proof,
+        args.badge_image
     )
 
 
