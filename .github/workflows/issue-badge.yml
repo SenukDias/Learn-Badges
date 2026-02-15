@@ -37,7 +37,7 @@ jobs:
           
       - name: Install dependencies
         run: |
-          pip install pillow requests
+          pip install requests
           
       - name: Generate badge
         id: generate
@@ -46,7 +46,8 @@ jobs:
             --name "${{ github.event.inputs.user_name }}" \
             --email "${{ github.event.inputs.email }}" \
             --profile "${{ github.event.inputs.learn_profile_url }}" \
-            --proof "${{ github.event.inputs.completion_proof }}"
+            --proof "${{ github.event.inputs.completion_proof }}" \
+            --badge-image "assets/step-into-ai-with-copilot-badge.png"
           # Read outputs from the script
           if [ -f badge_info.txt ]; then
             cat badge_info.txt >> $GITHUB_OUTPUT
