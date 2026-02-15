@@ -37,7 +37,7 @@ jobs:
           
       - name: Install dependencies
         run: |
-          pip install pillow requests
+          pip install requests
           
       - name: Generate badge
         id: generate
