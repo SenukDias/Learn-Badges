@@ -1,0 +1,92 @@
+name: Issue Digital Badge
+
+on:
+  workflow_dispatch:
+    inputs:
+      user_name:
+        description: 'Your full name'
+        required: true
+        type: string
+      email:
+        description: 'Your email address'
+        required: true
+        type: string
+      learn_profile_url:
+        description: 'Your Microsoft Learn profile URL (optional)'
+        required: false
+        type: string
+      completion_proof:
+        description: 'Link to completion proof (screenshot/certificate)'
+        required: false
+        type: string
+
+jobs:
+  issue-badge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          pip install pillow requests
+          
+      - name: Generate badge
+        id: generate
+        run: |
+          python scripts/generate_badge.py \
+            --name "${{ github.event.inputs.user_name }}" \
+            --email "${{ github.event.inputs.email }}" \
+            --profile "${{ github.event.inputs.learn_profile_url }}" \
+            --proof "${{ github.event.inputs.completion_proof }}"
+          # Read outputs from the script
+          if [ -f badge_info.txt ]; then
+            cat badge_info.txt >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Update Hall of Fame
+        run: |
+          python scripts/update_hall_of_fame.py \
+            --name "${{ github.event.inputs.user_name }}" \
+            --profile "${{ github.event.inputs.learn_profile_url }}"
+          
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          git add HALL_OF_FAME.md badges/
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Add badge for ${{ github.event.inputs.user_name }}"
+            git push
+          fi
+          
+      - name: Send email with badge
+        env:
+          EMAIL_PROVIDER: ${{ secrets.EMAIL_PROVIDER }}
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+          FROM_NAME: ${{ secrets.FROM_NAME }}
+        run: |
+          BADGE_PATH="${{ steps.generate.outputs.badge_path }}"
+          python scripts/send_email.py \
+            --to "${{ github.event.inputs.email }}" \
+            --name "${{ github.event.inputs.user_name }}" \
+            --badge "$BADGE_PATH"
+            
+      - name: Create success comment
+        run: |
+          echo "✅ Badge successfully generated and sent to ${{ github.event.inputs.email }}"
+          echo "🎉 ${{ github.event.inputs.user_name }} has been added to the Hall of Fame!"

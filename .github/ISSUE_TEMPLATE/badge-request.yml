@@ -1,0 +1,72 @@
+name: Request Digital Badge
+description: Request a digital badge for completing the Microsoft Learn AI Skills Challenge
+title: "[Badge Request] Your Name"
+labels: ["badge-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🎉 Microsoft Learn AI Skills Challenge Badge Request
+        
+        Thank you for completing the Microsoft Learn AI Skills Challenge! 
+        Fill out the form below to receive your personalized digital badge.
+        
+  - type: input
+    id: name
+    attributes:
+      label: Full Name
+      description: Your full name as it should appear on the badge
+      placeholder: e.g., John Doe
+    validations:
+      required: true
+      
+  - type: input
+    id: email
+    attributes:
+      label: Email Address
+      description: Where should we send your badge?
+      placeholder: e.g., john.doe@example.com
+    validations:
+      required: true
+      
+  - type: input
+    id: learn_profile
+    attributes:
+      label: Microsoft Learn Profile URL
+      description: Link to your Microsoft Learn profile (optional)
+      placeholder: e.g., https://learn.microsoft.com/en-us/users/johndoe/
+    validations:
+      required: false
+      
+  - type: input
+    id: completion_proof
+    attributes:
+      label: Completion Proof
+      description: Link to your completion proof (screenshot, certificate, etc.) - optional
+      placeholder: e.g., https://imgur.com/abc123 or attached screenshot
+    validations:
+      required: false
+      
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I confirm that I have completed the Microsoft Learn AI Skills Challenge
+          required: true
+        - label: I agree to have my name added to the public Hall of Fame
+          required: true
+          
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        
+        ### What happens next?
+        
+        1. A maintainer will review your request
+        2. If approved, they will trigger the workflow to generate your badge
+        3. You'll receive your badge via email within a few minutes
+        4. Your name will be added to our [Hall of Fame](../HALL_OF_FAME.md)
+        
+        **Note**: Instead of creating an issue, you can also directly trigger the workflow from the [Actions tab](../../actions/workflows/issue-badge.yml) if you have the necessary permissions.
