@@ -44,10 +44,12 @@ def generate_badge(name, email, profile_url=None, proof_url=None, badge_image_pa
             raise FileNotFoundError(f"Badge image not found: {badge_image_path}")
         
         # Copy the custom badge image to the output location
+        # Note: The custom badge is used as-is without personalization (name, date)
         shutil.copy2(badge_image_path, output_path)
         print(f"Using custom badge image: {badge_image_path}")
         print(f"Badge saved to: {output_path}")
         print(f"Verification Code: {verification_code}")
+        print("Note: Custom badge does not include personalized name or date")
         
         # Write outputs to file for GitHub Actions
         output_file = "badge_info.txt"
