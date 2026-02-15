@@ -35,10 +35,16 @@ def update_hall_of_fame(name, profile_url=None):
     
     new_entry = f"| {name} | {date_str} | {profile_link} |\n"
     
-    # Check if user already exists
-    if name in content:
-        print(f"⚠️  {name} is already in the Hall of Fame")
-        return
+    # Check if user already exists in the Hall of Fame table
+    # Look for exact match in table rows (format: "| Name | Date | Profile |")
+    lines = content.split('\n')
+    for line in lines:
+        if line.startswith('|') and not line.startswith('|---'):
+            # Extract the name column (first column after initial |)
+            columns = [col.strip() for col in line.split('|')]
+            if len(columns) >= 2 and columns[1] == name:
+                print(f"⚠️  {name} is already in the Hall of Fame")
+                return
     
     # Append new entry
     with open(hall_of_fame_file, 'a') as f:

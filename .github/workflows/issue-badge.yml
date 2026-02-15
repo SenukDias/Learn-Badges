@@ -47,6 +47,10 @@ jobs:
             --email "${{ github.event.inputs.email }}" \
             --profile "${{ github.event.inputs.learn_profile_url }}" \
             --proof "${{ github.event.inputs.completion_proof }}"
+          # Read outputs from the script
+          if [ -f badge_info.txt ]; then
+            cat badge_info.txt >> $GITHUB_OUTPUT
+          fi
           
       - name: Update Hall of Fame
         run: |
@@ -76,10 +80,11 @@ jobs:
           FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
           FROM_NAME: ${{ secrets.FROM_NAME }}
         run: |
+          BADGE_PATH="${{ steps.generate.outputs.badge_path }}"
           python scripts/send_email.py \
             --to "${{ github.event.inputs.email }}" \
             --name "${{ github.event.inputs.user_name }}" \
-            --badge "badges/${{ github.event.inputs.user_name }}_badge.png"
+            --badge "$BADGE_PATH"
             
       - name: Create success comment
         run: |

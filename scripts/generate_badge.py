@@ -59,7 +59,7 @@ def generate_badge(name, email, profile_url=None, proof_url=None):
         name_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 42)
         subtitle_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 28)
         info_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
-    except:
+    except (OSError, IOError):
         title_font = ImageFont.load_default()
         name_font = ImageFont.load_default()
         subtitle_font = ImageFont.load_default()
@@ -131,6 +131,12 @@ def generate_badge(name, email, profile_url=None, proof_url=None):
     print(f"Badge generated successfully: {output_path}")
     print(f"Verification Code: {verification_code}")
     
+    # Write outputs to file for GitHub Actions
+    output_file = "badge_info.txt"
+    with open(output_file, 'w') as f:
+        f.write(f"badge_path={output_path}\n")
+        f.write(f"verification_code={verification_code}\n")
+    
     return output_path, verification_code
 
 
@@ -149,10 +155,6 @@ def main():
         args.profile,
         args.proof
     )
-    
-    # Output for GitHub Actions
-    print(f"::set-output name=badge_path::{badge_path}")
-    print(f"::set-output name=verification_code::{verification_code}")
 
 
 if __name__ == "__main__":

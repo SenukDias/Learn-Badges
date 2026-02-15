@@ -8,7 +8,8 @@ This guide helps you test the digital badge automation system before going live.
 
 #### Test Badge Generation
 ```bash
-cd /home/runner/work/Learn-Badges/Learn-Badges
+# Navigate to your repository root directory
+cd /path/to/your/Learn-Badges
 python3 scripts/generate_badge.py \
   --name "Test User" \
   --email "test@example.com"
