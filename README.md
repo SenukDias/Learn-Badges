@@ -43,6 +43,12 @@ If you have access to the repository:
 - 🏆 Recognition in our [Hall of Fame](HALL_OF_FAME.md)
 - 📧 Email with your badge and instructions for sharing
 
+### Sample Badge
+
+Here's what your badge will look like:
+
+![Sample Badge](https://github.com/user-attachments/assets/5b35f1df-3987-4768-834f-ac209c307684)
+
 ## 🎨 Badge Features
 
 Your personalized badge includes:

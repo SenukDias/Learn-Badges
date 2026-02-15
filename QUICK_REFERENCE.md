@@ -35,6 +35,10 @@
 ✅ Email with badge attached  
 ✅ Your name in the [Hall of Fame](HALL_OF_FAME.md)  
 
+**Sample Badge:**
+
+<img src="https://github.com/user-attachments/assets/5b35f1df-3987-4768-834f-ac209c307684" alt="Sample Badge" width="400"/>
+
 ---
 
 ## Troubleshooting

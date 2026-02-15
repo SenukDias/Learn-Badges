@@ -139,6 +139,10 @@ This repository provides a **complete automated digital badge system** for recog
 
 ## 🎨 Badge Design Features
 
+**Sample Badge:**
+
+![Sample Badge](https://github.com/user-attachments/assets/5b35f1df-3987-4768-834f-ac209c307684)
+
 - **Dimensions:** 800 x 600 pixels
 - **Format:** PNG with high quality (95%)
 - **Background:** Blue-to-purple gradient
